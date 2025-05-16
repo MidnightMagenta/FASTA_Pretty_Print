@@ -3,6 +3,7 @@ Small command line utility for converting FASTA formated DNA, RNA, or protein se
 
 ## How to use
 Run the application from the command line with the following arguments:
+
 `-i [path]` - specifies the input file path
 
 `-o [path]` - specifies the output file path
