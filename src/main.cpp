@@ -36,6 +36,7 @@ int ParseArgs(int argc, char **argv, std::string &inPath, std::string &outPath, 
 			continue;
 		}
 	}
+	return 0;
 }
 
 int GetSequences(const std::string &path, std::vector<FASTA_Seq> &sequences) {
@@ -64,6 +65,7 @@ int GetSequences(const std::string &path, std::vector<FASTA_Seq> &sequences) {
 		}
 	}
 	if (!currentSeq.name.empty()) { sequences.push_back(currentSeq); }
+	return 0;
 }
 
 int WritePrettyPrint(const std::vector<FASTA_Seq> &sequences, const std::string &path, int lettersPerLine) {
@@ -90,6 +92,7 @@ int WritePrettyPrint(const std::vector<FASTA_Seq> &sequences, const std::string 
 		}
 		outFile << "\n";
 	}
+	return 0;
 }
 
 int main(int argc, char **argv) {
@@ -105,5 +108,7 @@ int main(int argc, char **argv) {
 
 	std::vector<FASTA_Seq> sequences;
 	if (GetSequences(inPath, sequences) < 0) { return -1; };
-	return WritePrettyPrint(sequences, outPath, lettersPerLine);
+	int res = WritePrettyPrint(sequences, outPath, lettersPerLine);
+	if (res >= 0) { std::cout << "Successfully written pretty text to: " << outPath << "\n"; }
+	return res;
 }

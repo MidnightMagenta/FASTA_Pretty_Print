@@ -11,7 +11,7 @@ set(VersionPatch 0)
 
 project("${ProjectName}" VERSION 0.1)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /MT")
 
 #app executable
 add_executable("${ProjectName}"
