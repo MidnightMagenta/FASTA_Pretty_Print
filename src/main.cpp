@@ -9,10 +9,7 @@ struct FASTA_Seq {
 	std::string data;
 };
 
-int main(int argc, char **argv) {
-	std::string inPath;
-	std::string outPath;
-	int lettersPerLine = 100;
+int ParseArgs(int argc, char **argv, std::string &inPath, std::string &outPath, int &lettersPerLine) {
 	for (int i = 0; i < argc; i++) {
 		if (strcmp(argv[i], "-i") == 0) {
 			if (i >= argc) {
@@ -39,29 +36,20 @@ int main(int argc, char **argv) {
 			continue;
 		}
 	}
-	if (lettersPerLine % 10 != 0) {
-		lettersPerLine = (lettersPerLine / 10) * 10;
-		std::cerr << "lettersPerLine must be a multiple of 10. Adjusting to " << (lettersPerLine / 10) * 10 << "\n";
-	}
+}
 
-	if (!std::filesystem::exists(inPath)) {
+int GetSequences(const std::string &path, std::vector<FASTA_Seq> &sequences) {
+	if (!std::filesystem::exists(path)) {
 		std::cerr << "Input file does not exist\n";
 		return -1;
 	}
-
-	std::fstream inFile(inPath);
-	std::ofstream outFile(outPath);
+	std::ifstream inFile(path);
 	if (!inFile.is_open()) {
-		std::cout << "Failed to open input file " << inPath << "\n";
-		return -1;
-	}
-	if (!outFile.is_open()) {
-		std::cout << "Failed to open output file " << outPath << "\n";
+		std::cout << "Failed to open input file " << path << "\n";
 		return -1;
 	}
 
 	std::string lineBuff;
-	std::vector<FASTA_Seq> sequences;
 	FASTA_Seq currentSeq;
 	while (std::getline(inFile, lineBuff)) {
 		if (lineBuff.empty()) continue;
@@ -76,6 +64,14 @@ int main(int argc, char **argv) {
 		}
 	}
 	if (!currentSeq.name.empty()) { sequences.push_back(currentSeq); }
+}
+
+int WritePrettyPrint(const std::vector<FASTA_Seq> &sequences, const std::string &path, int lettersPerLine) {
+	std::ofstream outFile(path);
+	if (!outFile.is_open()) {
+		std::cout << "Failed to open output file " << path << "\n";
+		return -1;
+	}
 
 	for (const auto &seq : sequences) {
 
@@ -94,4 +90,20 @@ int main(int argc, char **argv) {
 		}
 		outFile << "\n";
 	}
+}
+
+int main(int argc, char **argv) {
+	std::string inPath;
+	std::string outPath;
+	int lettersPerLine = 100;
+	if (ParseArgs(argc, argv, inPath, outPath, lettersPerLine) < 0) { return -1; }
+
+	if (lettersPerLine % 10 != 0) {
+		lettersPerLine = (lettersPerLine / 10) * 10;
+		std::cerr << "lettersPerLine must be a multiple of 10. Adjusting to " << (lettersPerLine / 10) * 10 << "\n";
+	}
+
+	std::vector<FASTA_Seq> sequences;
+	if (GetSequences(inPath, sequences) < 0) { return -1; };
+	return WritePrettyPrint(sequences, outPath, lettersPerLine);
 }
